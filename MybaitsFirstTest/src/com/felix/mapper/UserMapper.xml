@@ -2,20 +2,84 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  <!-- 这里的namespace是xml对应的接口 -->
+
+<!-- 这里的namespace是xml对应的接口 -->
 <mapper namespace="com.felix.mapper.UserMapper">
- <!-- resultType为返回的pojo类 如果配了别名则可以用别名 -->
+	<!-- resultType为返回的pojo类 如果配了别名则可以用别名 -->
 	<select id="findUserById" resultType="com.felix.pojo.User">
-		select * from user where id = #{id}
+		select * from user where id
+		= #{id}
 	</select>
 	<select id="findUserList" resultType="com.felix.pojo.User">
 		select * from user
 	</select>
 	<!-- 配置一个map返回的对象 -->
-	<resultMap type="user" id="userMap" >
+	<resultMap type="com.felix.pojo.User" id="userMap">
 		<!-- map对象的生成策略 -->
-		<id column="id" javaType="int" jdbcType="int" property="id" typeHandler=""/>
-		<result column="name" javaType="string" jdbcType="varchar"  property="name" typeHandler=""/>
-		<result column="age" javaType="int" jdbcType="int"  property="age" typeHandler=""/>
+		<id column="id" javaType="int" jdbcType="INTEGER" property="id" />
+		<!-- 自定义的 类型处理器 放在returnmap的类型中（衍生使用的枚举） -->
+		<result column="name" property="name"
+			typeHandler="com.felix.utils.MyStringTypeHandler" />
+		<result column="age" javaType="int" jdbcType="INTEGER"
+			property="age" />
 	</resultMap>
+	<select id="findUserByIdMap" parameterType="int" resultMap="userMap">
+		select * from user where id=#{id}
+	</select>
+	<select id="findUserByname" parameterType="string" resultMap="userMap">
+		<!-- 自定义的 类型处理器 放在语句的类型中（衍生使用的枚举） -->
+		select * from user where name like
+		concat('%',#{name,javaType=string,jdbcType=VARCHAR,typeHandler=com.felix.utils.MyStringTypeHandler},'%')
+	</select>
+	<select id="findUserBynameHandler" parameterType="string"
+		resultMap="userMap">
+		select * from user where name like
+		concat('%',#{name,javaType=string,jdbcType=VARCHAR},'%')
+	</select>
+	<insert id="insertUser" parameterType="com.felix.pojo.User">
+		insert into user(name,age)
+		values(#{name},#{age})
+	</insert>
+	<delete id="deleteUser" parameterType="int">
+		delete from user where
+		id=#{id}
+	</delete>
+
+	<!-- 创建一个Person对应的map -->
+	<resultMap type="long" id="personMap">
+		<id column="id" javaType="long" jdbcType="BIGINT" property="id" />
+		<result column="name" javaType="string" jdbcType="VARCHAR" />
+		<result column="age" javaType="string" jdbcType="VARCHAR"
+			property="age" typeHandler="com.felix.utils.MyStringTypeHandler" />
+		<!-- <result column="sex" property="sex" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/> -->
+		<result column="sex" property="sex"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+	</resultMap>
+	
+	<!-- person对应的操作 -->
+	<select id="findPersonById"  parameterType="long"
+	 resultType="com.felix.pojo.Person">
+		select * from person where id=#{id}
+	</select>
+	
+	<!-- 向person中插入数据 -->
+	<insert id="insertPerson" parameterType="com.felix.pojo.Person"
+		useGeneratedKeys="true" keyProperty="id">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select if(max(id) is null,1,max(id)+2 ) as Id from person
+		</selectKey>
+		insert into person(name,age,sex) values(#{name},#{age},#{sex})
+	</insert>
+
+	<!-- 动态sql片段 -->
+	<sql id="select_head">
+		id,name,age,sex
+	</sql>
+	
+	<select id="getPersonById"  resultMap="personMap">
+		select *
+<!-- 		<include refid="select_head" /> -->
+		from person where id=#{id}
+	</select>
+
 </mapper>

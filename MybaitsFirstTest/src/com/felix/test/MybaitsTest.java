@@ -10,8 +10,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.log4j.Logger;
 
 import com.felix.mapper.UserMapper;
-import com.felix.pojo.User;
-import com.felix.utils.SqlSessionFactoryUtils;
+import com.felix.pojo.Person;
 
 public class MybaitsTest {
 	private static SqlSessionFactory sqlSessionFactory=null;
@@ -27,16 +26,39 @@ public class MybaitsTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		logger.debug(inputStream.toString());
-//		sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-		sqlSessionFactory=SqlSessionFactoryUtils.getSqlSessionFactory();
-		logger.debug(sqlSessionFactory.toString());
+		logger.info(inputStream.toString());
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+		//用java编程实现获取sqlSessionFactory
+//		sqlSessionFactory=SqlSessionFactoryUtils.getSqlSessionFactory();
+		logger.info(sqlSessionFactory.toString());
 		// 获取sqlsession
 		SqlSession sqlsession = sqlSessionFactory.openSession();
 		// 获取代理借口
 		UserMapper usermapper = sqlsession.getMapper(UserMapper.class);
-		User user = usermapper.findUserById(1);
-		logger.debug(user);
+//		User map=usermapper.findUserByIdMap(1);
+//		logger.info("返回的map"+map);
+//		User user = usermapper.findUserById(1);
+//		logger.info("返回的map"+user);
+//		User userByname = usermapper.findUserByname("json");
+//		logger.info("返回的userByname"+userByname);
+////		logger.info(user);
+//		//
+//		User insertUser=new User();
+//		insertUser.setAge(22);
+//		insertUser.setName("felix");
+//		usermapper.insertUser(insertUser);
+//		usermapper.deleteUser(1);
+//		usermapper.findUserBynameHandler("json");
+//		Person person=new Person();
+//		person.setAge("Test");
+//		person.setName("json");
+//		person.setSex(Sex.FEMALE);
+//		//向数据库中插入Person
+//		usermapper.insertPerson(person);
+//		Person currentPerson=usermapper.getPersonById(5);
+//		logger.info("当前人："+currentPerson);
+		usermapper.findPersonById(3);
+		sqlsession.commit();
 		long end = System.currentTimeMillis();
 		logger.debug(end - start);
 	}
