@@ -46,7 +46,8 @@
 	</delete>
 
 	<!-- 创建一个Person对应的map -->
-	<resultMap type="long" id="personMap">
+	<!-- 这里定义的为一个map类型 -->
+	<resultMap type="com.felix.pojo.Person" id="personMap">
 		<id column="id" javaType="long" jdbcType="BIGINT" property="id" />
 		<result column="name" javaType="string" jdbcType="VARCHAR" />
 		<result column="age" javaType="string" jdbcType="VARCHAR"
@@ -58,7 +59,7 @@
 	
 	<!-- person对应的操作 -->
 	<select id="findPersonById"  parameterType="long"
-	 resultType="com.felix.pojo.Person">
+	resultMap="personMap">
 		select * from person where id=#{id}
 	</select>
 	
@@ -77,8 +78,8 @@
 	</sql>
 	
 	<select id="getPersonById"  resultMap="personMap">
-		select *
-<!-- 		<include refid="select_head" /> -->
+		select 
+		<include refid="select_head" />
 		from person where id=#{id}
 	</select>
 

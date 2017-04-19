@@ -32,8 +32,4 @@ public enum Sex {
 			return null;
 		}
 	}
-	
-
-	
-
 }

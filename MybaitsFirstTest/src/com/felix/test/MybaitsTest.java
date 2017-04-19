@@ -55,9 +55,10 @@ public class MybaitsTest {
 //		person.setSex(Sex.FEMALE);
 //		//向数据库中插入Person
 //		usermapper.insertPerson(person);
-//		Person currentPerson=usermapper.getPersonById(5);
-//		logger.info("当前人："+currentPerson);
-		usermapper.findPersonById(3);
+		Person currentPerson=usermapper.getPersonById(5);
+		logger.info("当前人："+currentPerson);
+		currentPerson=usermapper.findPersonById(3);
+		logger.info("当前人1："+currentPerson);
 		sqlsession.commit();
 		long end = System.currentTimeMillis();
 		logger.debug(end - start);
