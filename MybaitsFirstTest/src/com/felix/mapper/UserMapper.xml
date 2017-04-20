@@ -2,19 +2,30 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <!-- 这里的namespace是xml对应的接口 -->
 <mapper namespace="com.felix.mapper.UserMapper">
+	<resultMap type="orders" id="ordersMaps">
+		<id column="id" property="id"/>
+		<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
+		<association property="user" column="user_id"  select="findUserById"></association>
+	</resultMap>
+	<select id="findOrderByid" parameterType="int" resultMap="ordersMaps">
+		select * from orders 
+		<where>
+			id=#{id}
+		</where>
+	</select>
+	
 	<!-- resultType为返回的pojo类 如果配了别名则可以用别名 -->
-	<select id="findUserById" resultType="com.felix.pojo.User">
+	<select id="findUserById" resultType="user">
 		select * from user where id
 		= #{id}
 	</select>
-	<select id="findUserList" resultType="com.felix.pojo.User">
+	<select id="findUserList" resultType="user">
 		select * from user
 	</select>
 	<!-- 配置一个map返回的对象 -->
-	<resultMap type="com.felix.pojo.User" id="userMap">
+	<resultMap type="user" id="userMap">
 		<!-- map对象的生成策略 -->
 		<id column="id" javaType="int" jdbcType="INTEGER" property="id" />
 		<!-- 自定义的 类型处理器 放在returnmap的类型中（衍生使用的枚举） -->
@@ -82,5 +93,5 @@
 		<include refid="select_head" />
 		from person where id=#{id}
 	</select>
-
+	
 </mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里的namespace是xml对应的接口 -->
+<mapper namespace="com.felix.mapper.StudentMapper">
+<!-- 加载一方的第一种方式 -->
+	<resultMap type="student" id="studentMap">
+		<id column="id" property="id" javaType="long" jdbcType="BIGINT" />
+		<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
+		<result column="sex" property="sex" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+		<result column="birthday" property="birthday" javaType="java.util.Date" jdbcType="DATE"/>
+		<!-- 1 如果是在association里直接调用的话，用property和javaType来明确要加载的（一方）			 -->
+		<association property="clazz" autoMapping="true" column="clazz_id"  javaType="com.felix.pojo.Clazz">
+			<!-- 里面将要写一放的属性 -->
+			<id column="id" javaType="long" jdbcType="BIGINT" property="id" />
+			<result column="name" javaType="string" jdbcType="VARCHAR" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
+		</association>
+	</resultMap>
+	<!-- 查询student同时加载对应一方的clazz -->
+	<select id="getStudentById" parameterType="int" resultMap="studentMap">
+	select * from t_student
+		<where>id=#{id} </where>
+	</select>
+	<!-- 插入语句 -->
+	
+	<insert  parameterType="HashMap" id="insertIntoStudent" >
+		<selectKey keyColumn="id" keyProperty="id" resultType="long" order="BEFORE">
+		  select last_insert_id() 
+		</selectKey>
+		insert into t_student(id,name,sex,birthday,clazz_id) 
+		values(#{id},#{name},#{sex},#{birthday},#{clazz_id})
+	</insert>
+</mapper>

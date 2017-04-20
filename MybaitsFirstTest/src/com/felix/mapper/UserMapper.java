@@ -2,6 +2,7 @@ package com.felix.mapper;
 
 import java.util.List;
 
+import com.felix.pojo.Orders;
 import com.felix.pojo.Person;
 import com.felix.pojo.User;
 
@@ -16,4 +17,6 @@ public interface UserMapper {
 	public Person findPersonById(long id);
 	public void insertPerson(Person person);
 	public Person getPersonById(long id);
+	
+	public Orders findOrderByid(int id);
 }

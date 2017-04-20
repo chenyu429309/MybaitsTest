@@ -1,9 +1,15 @@
 package com.felix.pojo;
 
-import org.apache.ibatis.type.Alias;
+import java.io.Serializable;
 //利用注解来设置别名
-@Alias("user")
-public class User {
+/**
+ * 用户表
+ * @author Felix
+ *
+ */
+//@Alias("user")
+public class User implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private int age;
