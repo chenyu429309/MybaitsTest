@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.io.Resources;
@@ -15,6 +16,7 @@ import org.junit.Test;
 
 import com.felix.mapper.StudentMapper;
 import com.felix.mapper.UserMapper;
+import com.felix.pojo.Clazz;
 import com.felix.pojo.Orders;
 import com.felix.pojo.Student;
 import com.felix.utils.Sex;
@@ -73,6 +75,7 @@ public class MybaitsTest {
 		long end = System.currentTimeMillis();
 		logger.debug(end - start);
 	}
+
 	@Test
 	public void studentMapperTest() {
 		long start = System.currentTimeMillis();
@@ -92,16 +95,27 @@ public class MybaitsTest {
 		// 获取sqlsession
 		SqlSession sqlsession = sqlSessionFactory.openSession();
 		// 获取代理借口
-		 StudentMapper studentMapper=
-		 sqlsession.getMapper(StudentMapper.class);
-		// Student student= studentMapper.getStudentById(1);
-		// logger.info("查到的学生为："+student);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("name", "Felix");
-		map.put("sex", Sex.MALE);
-		map.put("birthday", new Date());
-		map.put("clazz_id", 2);
-		studentMapper.insertIntoStudent(map);
+		StudentMapper studentMapper = sqlsession.getMapper(StudentMapper.class);
+		List<Student> students = studentMapper.getStudentByClazzId(2);
+		for (Student student : students) {
+			logger.info("查到的学生为：" + student);
+		}
+		logger.info("查到的学生为：" + studentMapper.getStudentById(1));
+		// Map<String, Object> map = new HashMap<String, Object>();
+		// map.put("name", "Felix");
+		// map.put("sex", Sex.MALE);
+		// map.put("birthday", new Date());
+		// map.put("clazz_id", 2);
+		// studentMapper.insertIntoStudent(map);
+
+		Clazz clazz = studentMapper.getClazzById(2);
+		students = clazz.getStudents();
+		for (Student student : students) {
+			logger.info("查到2班的学生为：" + student);
+		}
+		
+		studentMapper.getGoodsListByOrderId(1);
+		studentMapper.getOrderListByGoogsId(1);
 		sqlsession.commit();
 		long end = System.currentTimeMillis();
 		logger.debug(end - start);

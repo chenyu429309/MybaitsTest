@@ -18,6 +18,8 @@
 	<!-- <setting name="cacheEnabled" value="true" /> -->
 	<!-- 配置是否开启懒加载 -->
 	<setting name="lazyLoadingEnabled" value="true" />
+	<!-- 属性按需加载 -->
+	<setting name="aggressiveLazyLoading" value="flase"/>
 	<!-- <setting name="multipleResultSetsEnabled" value="true" /> -->
 	<!-- <setting name="useColumnLabel" value="true" /> -->
 	<!-- <setting name="useGeneratedKeys" value="false" /> -->

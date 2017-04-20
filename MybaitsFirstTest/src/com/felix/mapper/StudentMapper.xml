@@ -11,19 +11,20 @@
 		<result column="sex" property="sex" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
 		<result column="birthday" property="birthday" javaType="java.util.Date" jdbcType="DATE"/>
 		<!-- 1 如果是在association里直接调用的话，用property和javaType来明确要加载的（一方）			 -->
-		<association property="clazz" autoMapping="true" column="clazz_id"  javaType="com.felix.pojo.Clazz">
+		<association property="clazz" javaType="com.felix.pojo.Clazz">
 			<!-- 里面将要写一放的属性 -->
 			<id column="id" javaType="long" jdbcType="BIGINT" property="id" />
 			<result column="name" javaType="string" jdbcType="VARCHAR" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
 		</association>
 	</resultMap>
 	<!-- 查询student同时加载对应一方的clazz -->
+	<select id="getStudentByClazzId" parameterType="int" resultMap="studentMap">
+		select * from t_student s,t_clazz c <where> s.clazz_id=c.id and c.id=#{id} </where>;
+	</select>
 	<select id="getStudentById" parameterType="int" resultMap="studentMap">
-	select * from t_student
-		<where>id=#{id} </where>
+		select * from t_student s,t_clazz c <where> s.clazz_id=c.id and s.id=#{id} </where>;
 	</select>
 	<!-- 插入语句 -->
-	
 	<insert  parameterType="HashMap" id="insertIntoStudent" >
 		<selectKey keyColumn="id" keyProperty="id" resultType="long" order="BEFORE">
 		  select last_insert_id() 
@@ -31,4 +32,44 @@
 		insert into t_student(id,name,sex,birthday,clazz_id) 
 		values(#{id},#{name},#{sex},#{birthday},#{clazz_id})
 	</insert>
+	
+	
+	<select id="getClazzById" parameterType="int" resultMap="clazzMap">
+		select * from t_clazz <where> id=#{id} </where>;
+	</select>
+	
+	<resultMap type="clazz" id="clazzMap">
+		<id column="id" property="id" javaType="long" jdbcType="BIGINT" />
+		<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
+		<!-- 这里使用一个select语句来查询student集合  column的值为传入的值-->
+		<collection property="students" fetchType="lazy" column="id" select="getStudentByClazzId" fetchType="lazy"></collection>
+	</resultMap>
+	
+	
+	<resultMap type="goods" id="goodsMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
+		<collection property="goods" column="id" select="getOrderListByGoogsId" fetchType="lazy"></collection>
+<!-- 		<collection property="orders" ofType="order"> -->
+<!-- 			<id column="id" property="id"/> -->
+<!-- 			<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/> -->
+<!-- 		</collection> -->
+	</resultMap>
+	<select id="getGoodsListByOrderId" resultMap="goodsMap">
+		select g.* from order_good og,`order` o,goods g where og.order_id=o.id and og.goods_id=g.id and o.id=#{id}
+	</select>
+	
+	<resultMap type="order" id="orderMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/>
+		<collection property="goods" column="id" select="getGoodsListByOrderId" fetchType="lazy"></collection>
+<!-- 		<collection property="goods" ofType="goods"> -->
+<!-- 			<id column="id" property="id"/> -->
+<!-- 			<result column="name" property="name" typeHandler="com.felix.utils.MyStringTypeHandler"/> -->
+<!-- 		</collection> -->
+	</resultMap>
+	<select id="getOrderListByGoogsId" resultMap="orderMap">
+		select o.* from order_good og,`order` o,goods g where og.order_id=o.id and og.goods_id=g.id and g.id=#{id}
+	</select>
+		
 </mapper>
