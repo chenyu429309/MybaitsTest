@@ -8,21 +8,42 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
 import org.junit.Test;
 
-public class HelloWorld {
+import com.sun.istack.internal.logging.Logger;
 
+public class HelloWorld {
+private Logger logger=Logger.getLogger(HelloWorld.class);
 	@Test
 	public void testHelloWorld() {
-		//1获取SecurityManager工厂，使用ini配置文件初始化SecurityManager
 		Factory< SecurityManager> factory=  new IniSecurityManagerFactory("classpath:shiro.ini");
-		//2 得到SecurityManager实例，并绑定给SecurityUtils
 		 SecurityManager securityManager=factory.getInstance();
 		SecurityUtils.setSecurityManager(securityManager);
-		//得到Subject及创建用户名和密码验证身份Token（即用户凭证）
-		
 		Subject subject=SecurityUtils.getSubject();
 		UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken("zhangsan", "123");
 		subject.login(usernamePasswordToken);
-		
 	}
+	
+	public void login(String path) {
+//		Factory< SecurityManager> factory=  new IniSecurityManagerFactory("classpath:shiro.ini");
+		Factory< SecurityManager> factory=  new IniSecurityManagerFactory(path);
+		 SecurityManager securityManager=factory.getInstance();
+		SecurityUtils.setSecurityManager(securityManager);
+		Subject subject=SecurityUtils.getSubject();
+		UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken("zhangsan", "123");
+		subject.login(usernamePasswordToken);
+	}
+	//鑷畾涔塕ealm娴嬭瘯
+	@Test
+	public void MyRealmsTest(){
+		login("classpath:shiro-multi-realm.ini");
+		Subject subject=SecurityUtils.getSubject();
+		logger.info(subject.getPrincipal().toString());
+	}
+	@Test
+	public void MyRealmsjdbcTest(){
+		login("classpath:shiro-jdbc-realm.ini");
+		Subject subject=SecurityUtils.getSubject();
+		logger.info(subject.getPrincipal().toString());
+	}
+	
 
 }
